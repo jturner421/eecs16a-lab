@@ -63,8 +63,10 @@ def test_q9(q9):
 def test_q10(q10):
     A = np.array([[1,1,1],[1,1,1],[1,1,1] ,[1,1,1]])
     B = np.array([[1,2,3,4],[5,6,7,8],[9,10,11,12]])
-    p = 2
-    Output = np.array([[1,1,1,3,7,11],[1,1,1,4,8,12]])
+    #p = 2
+    p = 1
+    Output = np.array([[1, 1, 1, 4, 8, 12]])
+    #Output = np.array([[1,1,1,3,7,11],[1,1,1,4,8,12]])
     assert np.array_equal(q10(A,B,p), Output), 'Question 10 Failed!\nInput:\nA: %r\nB: %r\np: 2\nCorrect Answer:\n%r\nYour Answer:\n%r' % (A, B, Output, q10(A,B,p))
     print('Question 10 Passed!')
 
