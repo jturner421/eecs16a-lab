@@ -92,27 +92,6 @@ class Mask(QtWidgets.QWidget):
 
   def updateData(self):
 
-    mask = np.reshape(self.Hr[self.count, :], (self.imgHeight, self.imgWidth))
-
-    if self.overlay:
-      curr_scan = np.multiply(self.image, mask)       # Perform a scan using element wise multiplication
-    else:
-      curr_scan = mask
-
-    # Conversion to QtImage
-    curr_scan = (curr_scan).astype(np.uint8)
-    res = Image.fromarray(curr_scan, mode = 'L')
-    resQT = ImageQt.ImageQt(res) 
-    QI = resQT
-    self.label.setPixmap(QtGui.QPixmap.fromImage(QI).scaled(self.dispWidth, self.dispHeight))
-    
-    curr_brightness = np.sum(curr_scan)
-
-    if self.count <= 10 or self.count % 100 == 0:
-        print("Count: %s, Brightness value: %s\n" % (self.count, curr_brightness))    
-
-    self.count += 1
-
     if self.count >= self.numMeasurements:
       self.timer.stop()
       self.time_final = time.time()
@@ -120,6 +99,28 @@ class Mask(QtWidgets.QWidget):
       print("\nScan completed")
       print("Scan time: %.3f m" % ((elapsed_time//60)), " %.3f s" % ((elapsed_time)%60))
       self.close()  
+
+    else:
+      mask = np.reshape(self.Hr[self.count, :], (self.imgHeight, self.imgWidth))
+
+      if self.overlay:
+        curr_scan = np.multiply(self.image, mask)       # Perform a scan using element wise multiplication
+      else:
+        curr_scan = mask
+
+      # Conversion to QtImage
+      curr_scan = (curr_scan).astype(np.uint8)
+      res = Image.fromarray(curr_scan, mode = 'L')
+      resQT = ImageQt.ImageQt(res) 
+      QI = resQT
+      self.label.setPixmap(QtGui.QPixmap.fromImage(QI).scaled(self.dispWidth, self.dispHeight))
+    
+      curr_brightness = np.sum(curr_scan)
+
+      if self.count <= 10 or self.count % 100 == 0:
+        print("Count: %s, Brightness value: %s\n" % (self.count, curr_brightness))    
+
+      self.count += 1
 
 
 def main():

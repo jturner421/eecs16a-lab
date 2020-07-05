@@ -92,27 +92,6 @@ class Mask(QtWidgets.QWidget):
 
   def updateData(self):
 
-    mask = self.Hr[self.count, :]                   # Load a mask as a row vector
-    img_vec = np.reshape(self.image, (self.imgWidth * self.imgHeight, 1))      # Image vector
-    
-    curr_scan = np.dot(mask, img_vec)      # Perform a scan using dot product of mask row vec and image col vec
-    self.sensor_readings[self.count] = curr_scan               # Add to vector of sensor reading
-
-    curr_res = np.reshape(self.sensor_readings, (self.imgHeight, self.imgWidth))
-
-    # Conversion to QtImage
-    #curr_res = (curr_res * 255).astype(np.uint8)
-    curr_res = (curr_res).astype(np.uint8)
-    res = Image.fromarray(curr_res, mode = 'L')
-    resQT = ImageQt.ImageQt(res) 
-    QI = resQT
-    self.label.setPixmap(QtGui.QPixmap.fromImage(QI).scaled(self.dispWidth, self.dispHeight))
-
-    if self.count <= 10 or self.count % 100 == 0:
-        print("Count: %s \n" % self.count)
-    
-    self.count += 1
-
     if self.count >= self.numMeasurements:
       """
       # Vectorize and save sensor readings
@@ -128,6 +107,28 @@ class Mask(QtWidgets.QWidget):
       print("Scan time: %.3f m" % ((elapsed_time//60)), " %.3f s" % ((elapsed_time)%60))
       time.sleep(2.0)
       self.close()  
+
+    else:
+      mask = self.Hr[self.count, :]                   # Load a mask as a row vector
+      img_vec = np.reshape(self.image, (self.imgWidth * self.imgHeight, 1))      # Image vector
+    
+      curr_scan = np.dot(mask, img_vec)      # Perform a scan using dot product of mask row vec and image col vec
+      self.sensor_readings[self.count] = curr_scan               # Add to vector of sensor reading
+
+      curr_res = np.reshape(self.sensor_readings, (self.imgHeight, self.imgWidth))
+
+      # Conversion to QtImage
+      #curr_res = (curr_res * 255).astype(np.uint8)
+      curr_res = (curr_res).astype(np.uint8)
+      res = Image.fromarray(curr_res, mode = 'L')
+      resQT = ImageQt.ImageQt(res) 
+      QI = resQT
+      self.label.setPixmap(QtGui.QPixmap.fromImage(QI).scaled(self.dispWidth, self.dispHeight))
+
+      if self.count <= 10 or self.count % 100 == 0:
+        print("Count: %s \n" % self.count)
+    
+      self.count += 1
 
 
 def main():

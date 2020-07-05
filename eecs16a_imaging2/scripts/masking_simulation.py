@@ -92,37 +92,43 @@ class Mask(QtWidgets.QWidget):
 
   def updateData(self):
 
-    mask = np.reshape(self.Hr[self.count, :], (self.imgHeight, self.imgWidth))
-
-    if self.overlay:
-      curr_scan = np.multiply(self.image, mask)       # Perform a scan using element wise multiplication
-    else:
-      curr_scan = mask
-
-    # Conversion to QtImage
-    curr_scan = (curr_scan).astype(np.uint8)
-    res = Image.fromarray(curr_scan, mode = 'L')
-    resQT = ImageQt.ImageQt(res) 
-    QI = resQT
-    self.label.setPixmap(QtGui.QPixmap.fromImage(QI).scaled(self.dispWidth, self.dispHeight))
-    
-    curr_brightness = np.sum(curr_scan)
-
-    if self.count <= 10 or self.count % 100 == 0:
-        print("Count: %s, Brightness value: %s\n" % (self.count, curr_brightness))
-
-    self.count += 1
-
-    if self.count <= 10:          #Go glow for the first 10 scans
-      time.sleep(0.5)
-
     if self.count >= self.numMeasurements:
+
       self.timer.stop()
       self.time_final = time.time()
       elapsed_time = self.time_final - self.time0
       print("\nScan completed")
       print("Scan time: %.3f m" % ((elapsed_time//60)), " %.3f s" % ((elapsed_time)%60))
-      self.close()  
+      self.close()
+
+    else:
+      
+      mask = np.reshape(self.Hr[self.count, :], (self.imgHeight, self.imgWidth))
+
+      if self.overlay:
+        curr_scan = np.multiply(self.image, mask)       # Perform a scan using element wise multiplication
+      else:
+        curr_scan = mask
+
+      # Conversion to QtImage
+      curr_scan = (curr_scan).astype(np.uint8)
+      res = Image.fromarray(curr_scan, mode = 'L')
+      resQT = ImageQt.ImageQt(res) 
+      QI = resQT
+      self.label.setPixmap(QtGui.QPixmap.fromImage(QI).scaled(self.dispWidth, self.dispHeight))
+    
+      curr_brightness = np.sum(curr_scan)
+
+      if self.count > 1020:
+        print(mask)
+
+      if self.count <= 10 or self.count % 100 == 0:
+        print("Count: %s, Brightness value: %s\n" % (self.count, curr_brightness))
+
+      self.count += 1
+
+      if self.count <= 10:          #Go slow for the first 10 scans
+        time.sleep(0.5)      
 
 
 def main():
