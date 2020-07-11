@@ -1,30 +1,32 @@
-/*
-  Reads an analog input on pin P6.0, prints the result to the serial monitor.
-  This example code is in the public domain.
- */
-
-// the setup routine runs once when you press reset:
-void setup() {
-  // initialize serial communication at 115200 bits per second:
+unsigned long firstSensor = 0;    // first analog sensor
+unsigned int numAvgs = 50;
+int handshake = 0;
+float vcc = 3.3;
+float bits = 4096.0;
+int count = 0;
+void setup()
+{
+  // start serial port at 115200 bps:
   Serial.begin(115200);
+  count = 0;
 }
 
-// the loop routine runs over and over again forever:
 void loop() {
-  // read the input on analog pin P6.0 (A0):
-  int sensorValue = analogRead(A0);
-  // print out the value you read:
-  float volt = 3.3 * sensorValue / 4096.0;
-  Serial.print(0);
-  Serial.print("\t");
-  Serial.print(1);
-  Serial.print("\t");
-  Serial.print(2);
-  Serial.print("\t");
-  Serial.print(3);
-  Serial.print("\t");
-  Serial.print(3.3);
-  Serial.print(" ");
-  Serial.println(volt, 2);
-  delay(20);  // delay set to minimum for real time plotting 
+  if (Serial.available() > 0) {
+    handshake = Serial.read();
+    if (handshake == 57) 
+      Serial.flush();
+    else if (handshake == 54) {
+      firstSensor = 0;
+      for (int count = 0; count < numAvgs; count++) {  
+        firstSensor += analogRead(A0);
+        delay(1);
+      }
+      Serial.print("[");
+      Serial.print(count);
+      Serial.print("]: ");
+      Serial.println((firstSensor / numAvgs) / bits * vcc, 3);
+      count++;
+    }
+  }
 }
